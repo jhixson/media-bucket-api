@@ -53,6 +53,18 @@ defmodule MediaApi.MediaTest do
       assert item == Media.get_item!(item.id)
     end
 
+    test "item ratings above 10 are invalid" do
+      item = item_fixture()
+      assert {:error, %Ecto.Changeset{}} = Media.update_item(item, %{rating: 80})
+      assert item == Media.get_item!(item.id)
+    end
+
+    test "negative item ratings are invalid" do
+      item = item_fixture()
+      assert {:error, %Ecto.Changeset{}} = Media.update_item(item, %{rating: -55})
+      assert item == Media.get_item!(item.id)
+    end
+
     test "delete_item/1 deletes the item" do
       item = item_fixture()
       assert {:ok, %Item{}} = Media.delete_item(item)
