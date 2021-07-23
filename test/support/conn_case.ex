@@ -23,6 +23,7 @@ defmodule MediaApiWeb.ConnCase do
       import Plug.Conn
       import Phoenix.ConnTest
       import MediaApiWeb.ConnCase
+      import MediaApi.Factory
 
       alias MediaApiWeb.Router.Helpers, as: Routes
 
