@@ -1,12 +1,10 @@
 defmodule MediaApiWeb.Router do
   use MediaApiWeb, :router
 
-  pipeline :api do
-    plug :accepts, ["json"]
-  end
+  forward "/graph", Absinthe.Plug, schema: MediaApi.Schema
 
-  scope "/api", MediaApiWeb do
-    pipe_through :api
+  if Mix.env == :dev do
+    forward "/graphiql", Absinthe.Plug.GraphiQL, schema: MediaApi.Schema
   end
 
   # Enables LiveDashboard only for development
