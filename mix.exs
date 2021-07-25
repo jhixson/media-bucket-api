@@ -46,7 +46,8 @@ defmodule MediaApi.MixProject do
       {:absinthe, "~> 1.5"},
       {:absinthe_plug, "~> 1.5"},
       {:absinthe_phoenix, "~> 2.0.0"},
-      {:ex_machina, "~> 2.7.0", only: :test}
+      {:ex_machina, "~> 2.7.0", only: :test},
+      {:cors_plug, "~> 2.0"}
     ]
   end
 
