@@ -18,7 +18,8 @@ defmodule MediaApi.Media do
 
   """
   def list_items do
-    Repo.all(Item)
+    query = from i in Item, order_by: [desc: i.status, asc: i.title]
+    query |> Repo.all()
   end
 
   @doc """
