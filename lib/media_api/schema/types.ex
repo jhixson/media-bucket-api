@@ -10,7 +10,15 @@ defmodule MediaApi.Schema.Types do
 
   @desc "An item"
   object :item do
+    field :id, :integer
     field :title, :string
+    field :notes, :string
+    field :rating, :integer
+    field :status, :status
+  end
+
+  input_object :item_input do
+    field :id, non_null(:integer)
     field :notes, :string
     field :rating, :integer
     field :status, :status
