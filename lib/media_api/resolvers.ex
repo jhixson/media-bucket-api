@@ -1,9 +1,9 @@
 defmodule MediaApi.Resolvers do
   alias MediaApi.Media
 
-  def get_items(_parent, _args, _context) do
-    items = Media.list_items()
-    {:ok, items}
+  def get_category_items(_parent, %{category_id: category_id}, _context) do
+    category = Media.get_category!(category_id)
+    {:ok, category}
   end
 
   def update_item(_parent, %{item: attrs}, _context) do

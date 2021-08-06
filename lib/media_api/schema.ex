@@ -6,8 +6,12 @@ defmodule MediaApi.Schema do
   import_types MediaApi.Schema.Types
 
   query do
-    field :items, type: list_of(:item) do
-      resolve(&Resolvers.get_items/3)
+
+
+    field :category_items, type: list_of(:category) do
+      arg :category_id, non_null(:integer)
+
+      resolve(&Resolvers.get_category_items/3)
     end
   end
 

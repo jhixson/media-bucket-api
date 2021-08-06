@@ -10,20 +10,6 @@ defmodule MediaApi.Media do
   alias MediaApi.Media.Category
 
   @doc """
-  Returns the list of items.
-
-  ## Examples
-
-      iex> list_items()
-      [%Item{}, ...]
-
-  """
-  def list_items do
-    query = from i in Item, order_by: [desc: i.status, asc: i.title]
-    query |> Repo.all()
-  end
-
-  @doc """
   Gets a single item.
 
   Raises `Ecto.NoResultsError` if the Item does not exist.
@@ -115,6 +101,19 @@ defmodule MediaApi.Media do
   """
   def list_categories do
     Repo.all(Category)
+  end
+
+  @doc """
+  Returns a category and its items.
+
+  ## Examples
+
+      iex> get_category!(category_id)
+      %Category{items: [%Item{}, ...]}
+
+  """
+  def get_category!(category_id) do
+    Repo.get!(Category, category_id) |> Repo.preload(:items)
   end
 
   @doc """

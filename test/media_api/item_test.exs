@@ -1,36 +1,32 @@
-defmodule MediaApi.MediaTest do
+defmodule MediaApi.ItemTest do
   use MediaApi.DataCase
+  import MediaApi.Factory
 
   alias MediaApi.Media
+  alias MediaApi.Media.Item
 
   describe "items" do
-    alias MediaApi.Media.Item
-
     @valid_attrs %{status: "pending", title: "some title"}
     @update_attrs %{notes: "some notes", rating: 8, status: "finished"}
     @invalid_attrs %{title: nil}
 
-    def item_fixture(attrs \\ %{}) do
-      {:ok, item} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> Media.create_item()
-
-      item
-    end
-
-    test "list_items/0 returns all items" do
-      item = item_fixture()
-      assert Media.list_items() == [item]
+    test "get_category/1 returns all items for given category" do
+      category = insert(:category, title: "Movies")
+      item = insert(:item, %{category_id: category.id})
+      %{items: items} = Media.get_category!(category.id)
+      assert items == [item]
     end
 
     test "get_item!/1 returns the item with given id" do
-      item = item_fixture()
+      category = insert(:category, title: "Movies")
+      item = insert(:item, %{category_id: category.id})
       assert Media.get_item!(item.id) == item
     end
 
     test "create_item/1 with valid data creates a item" do
-      assert {:ok, %Item{} = item} = Media.create_item(@valid_attrs)
+      category = insert(:category, title: "Movies")
+      attrs = Map.merge(@valid_attrs, %{category_id: category.id})
+      assert {:ok, %Item{} = item} = Media.create_item(attrs)
       assert item.status == :pending
       assert item.title == "some title"
     end
@@ -39,8 +35,13 @@ defmodule MediaApi.MediaTest do
       assert {:error, %Ecto.Changeset{}} = Media.create_item(@invalid_attrs)
     end
 
+    test "create_item/1 without category returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Media.create_item(@valid_attrs)
+    end
+
     test "update_item/2 with valid data updates the item" do
-      item = item_fixture()
+      category = insert(:category, title: "Movies")
+      item = insert(:item, %{category_id: category.id})
       assert {:ok, %Item{} = item} = Media.update_item(item, @update_attrs)
       assert item.notes == "some notes"
       assert item.rating == 8
@@ -48,31 +49,36 @@ defmodule MediaApi.MediaTest do
     end
 
     test "update_item/2 with invalid data returns error changeset" do
-      item = item_fixture()
+      category = insert(:category, title: "Movies")
+      item = insert(:item, %{category_id: category.id})
       assert {:error, %Ecto.Changeset{}} = Media.update_item(item, @invalid_attrs)
       assert item == Media.get_item!(item.id)
     end
 
     test "item ratings above 10 are invalid" do
-      item = item_fixture()
+      category = insert(:category, title: "Movies")
+      item = insert(:item, %{category_id: category.id})
       assert {:error, %Ecto.Changeset{}} = Media.update_item(item, %{rating: 80})
       assert item == Media.get_item!(item.id)
     end
 
     test "negative item ratings are invalid" do
-      item = item_fixture()
+      category = insert(:category, title: "Movies")
+      item = insert(:item, %{category_id: category.id})
       assert {:error, %Ecto.Changeset{}} = Media.update_item(item, %{rating: -55})
       assert item == Media.get_item!(item.id)
     end
 
     test "delete_item/1 deletes the item" do
-      item = item_fixture()
+      category = insert(:category, title: "Movies")
+      item = insert(:item, %{category_id: category.id})
       assert {:ok, %Item{}} = Media.delete_item(item)
       assert_raise Ecto.NoResultsError, fn -> Media.get_item!(item.id) end
     end
 
     test "change_item/1 returns a item changeset" do
-      item = item_fixture()
+      category = insert(:category, title: "Movies")
+      item = insert(:item, %{category_id: category.id})
       assert %Ecto.Changeset{} = Media.change_item(item)
     end
   end

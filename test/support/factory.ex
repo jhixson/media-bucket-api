@@ -7,4 +7,10 @@ defmodule MediaApi.Factory do
       status: :pending
     }
   end
+
+  def category_factory do
+    %MediaApi.Media.Category{
+      title: "Movies"
+    }
+  end
 end

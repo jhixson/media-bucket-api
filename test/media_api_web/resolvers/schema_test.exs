@@ -3,34 +3,41 @@ defmodule MediaApiWeb.SchemaTest do
   import MediaApi.TestUtilities
 
   test "list items", %{conn: conn} do
-    item1 = insert(:item, title: "Back to the Future Part 2", status: :finished)
-    item2 = insert(:item, title: "Back to the Future Part 3", status: :pending)
+    category = insert(:category)
+    item1 = insert(:item, title: "Back to the Future Part 2", status: :finished, category_id: category.id)
+    item2 = insert(:item, title: "Back to the Future Part 3", status: :pending, category_id: category.id)
 
     conn =
       post(conn, "/graph", %{
         "query" => """
-        query getItems {
-          items {
+        query categoryItems {
+          categoryItems(categoryId: #{category.id}){
             title
-            status
+            items {
+              title
+              status
+            }
           }
         }
         """
       })
 
     assert json_response(conn, 200) == %{
-             "data" => %{
-               "items" => [
-                 %{"title" => item1.title, "status" => enum_to_upstring(item1.status)},
-                 %{"title" => item2.title, "status" => enum_to_upstring(item2.status)}
-               ]
-             }
-           }
+            "data" => %{
+              "categoryItems" => [
+                %{"title" => category.title, "items" => [
+                  %{"title" => item1.title, "status" => enum_to_upstring(item1.status)},
+                  %{"title" => item2.title, "status" => enum_to_upstring(item2.status)}
+                ]}
+              ]
+            }
+          }
   end
 
   test "update item status", %{conn: conn} do
-    item1 = insert(:item, title: "Back to the Future Part 2", status: :finished)
-    insert(:item, title: "Back to the Future Part 3", status: :pending)
+    category = insert(:category)
+    item1 = insert(:item, title: "Back to the Future Part 2", status: :finished, category_id: category.id)
+    insert(:item, title: "Back to the Future Part 3", status: :pending, category_id: category.id)
 
     conn =
       post(conn, "/graph", %{
@@ -38,7 +45,8 @@ defmodule MediaApiWeb.SchemaTest do
         mutation{
           updateItem(item: {
             id: #{item1.id}
-            status:STARTED
+            category_id: #{item1.category_id}
+            status: STARTED
           }) {
             title
             status
@@ -48,12 +56,12 @@ defmodule MediaApiWeb.SchemaTest do
       })
 
     assert json_response(conn, 200) == %{
-             "data" => %{
-               "updateItem" => %{
-                 "title" => item1.title,
-                 "status" => "STARTED"
-               }
-             }
-           }
+            "data" => %{
+              "updateItem" => %{
+                "title" => item1.title,
+                "status" => "STARTED"
+              }
+            }
+          }
   end
 end
