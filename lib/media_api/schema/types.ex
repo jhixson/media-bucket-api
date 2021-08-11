@@ -11,7 +11,8 @@ defmodule MediaApi.Schema.Types do
   @desc "An item"
   object :item do
     field :id, non_null(:integer)
-    field :title, :string
+    field :category_id, non_null(:integer)
+    field :title, non_null(:string)
     field :notes, :string
     field :rating, :integer
     field :status, :status
@@ -28,7 +29,7 @@ defmodule MediaApi.Schema.Types do
   @desc "A category"
   object :category do
     field :id, non_null(:integer)
-    field :title, :string
-    field :items, list_of(:item)
+    field :title, non_null(:string)
+    field :items, non_null(list_of(non_null(:item)))
   end
 end

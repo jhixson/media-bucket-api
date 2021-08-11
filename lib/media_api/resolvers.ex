@@ -1,6 +1,11 @@
 defmodule MediaApi.Resolvers do
   alias MediaApi.Media
 
+  def get_categories(_parent, _args, _context) do
+    categories = Media.list_categories()
+    {:ok, categories}
+  end
+
   def get_category_items(_parent, %{category_id: category_id}, _context) do
     category = Media.get_category!(category_id)
     {:ok, category}

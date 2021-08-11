@@ -7,6 +7,9 @@ defmodule MediaApi.Schema do
 
   query do
 
+    field :categories, type: non_null(list_of(non_null(:category))) do
+      resolve(&Resolvers.get_categories/3)
+    end
 
     field :category_items, type: list_of(:category) do
       arg :category_id, non_null(:integer)

@@ -96,11 +96,11 @@ defmodule MediaApi.Media do
   ## Examples
 
       iex> list_categories()
-      [%Category{}, ...]
+      [%Category{items: [%Item{}, ...]}, ...]
 
   """
   def list_categories do
-    Repo.all(Category)
+    Repo.all(Category) |> Repo.preload(items: from(i in Item, order_by: [asc: i.title]))
   end
 
   @doc """
