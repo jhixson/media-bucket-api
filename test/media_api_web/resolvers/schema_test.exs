@@ -12,8 +12,11 @@ defmodule MediaApiWeb.SchemaTest do
         "query" => """
         query categoryItems {
           categoryItems(categoryId: #{category.id}){
+            id
             title
             items {
+              id
+              categoryId
               title
               status
             }
@@ -25,9 +28,19 @@ defmodule MediaApiWeb.SchemaTest do
     assert json_response(conn, 200) == %{
             "data" => %{
               "categoryItems" => [
-                %{"title" => category.title, "items" => [
-                  %{"title" => item1.title, "status" => enum_to_upstring(item1.status)},
-                  %{"title" => item2.title, "status" => enum_to_upstring(item2.status)}
+                %{"id" => category.id, "title" => category.title, "items" => [
+                  %{
+                    "id" => item1.id,
+                    "categoryId" => item1.category_id,
+                    "title" => item1.title,
+                    "status" => enum_to_upstring(item1.status)
+                  },
+                  %{
+                    "id" => item2.id,
+                    "categoryId" => item2.category_id,
+                    "title" => item2.title,
+                    "status" => enum_to_upstring(item2.status)
+                  }
                 ]}
               ]
             }
@@ -43,11 +56,13 @@ defmodule MediaApiWeb.SchemaTest do
       post(conn, "/graph", %{
         "query" => """
         mutation{
-          updateItem(item: {
-            id: #{item1.id}
+          updateItem(id: #{item1.id}, item: {
             category_id: #{item1.category_id}
+            title: "#{item1.title}"
             status: STARTED
           }) {
+            id
+            categoryId
             title
             status
           }
@@ -58,8 +73,48 @@ defmodule MediaApiWeb.SchemaTest do
     assert json_response(conn, 200) == %{
             "data" => %{
               "updateItem" => %{
+                "id" => item1.id,
+                "categoryId" => item1.category_id,
                 "title" => item1.title,
                 "status" => "STARTED"
+              }
+            }
+          }
+  end
+
+  test "add item", %{conn: conn} do
+    category = insert(:category)
+
+    conn =
+      post(conn, "/graph", %{
+        "query" => """
+        mutation{
+          addItem(item: {
+            category_id: #{category.id}
+            title: "Air Bud"
+            status: PENDING
+          }) {
+            id
+            categoryId
+            title
+            status
+          }
+        }
+        """
+      })
+
+    new_item =
+      MediaApi.Media.Item
+      |> Ecto.Query.first()
+      |> MediaApi.Repo.one()
+
+    assert json_response(conn, 200) == %{
+            "data" => %{
+              "addItem" => %{
+                "id" => new_item.id,
+                "categoryId" => category.id,
+                "title" => "Air Bud",
+                "status" => "PENDING"
               }
             }
           }
