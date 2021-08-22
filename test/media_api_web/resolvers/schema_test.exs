@@ -119,4 +119,35 @@ defmodule MediaApiWeb.SchemaTest do
             }
           }
   end
+
+  test "delete item", %{conn: conn} do
+    category = insert(:category)
+    item = insert(:item, title: "Back to the Future", status: :pending, category_id: category.id)
+    insert(:item, title: "Back to the Future Part 2", status: :pending, category_id: category.id)
+    insert(:item, title: "Back to the Future Part 3", status: :pending, category_id: category.id)
+
+    conn =
+      post(conn, "/graph", %{
+        "query" => """
+        mutation{
+          deleteItem(id: #{item.id}) {
+            id
+            categoryId
+          }
+        }
+        """
+      })
+
+    assert json_response(conn, 200) == %{
+            "data" => %{
+              "deleteItem" => %{
+                "id" => item.id,
+                "categoryId" => category.id,
+              }
+            }
+          }
+
+    %{items: items} = MediaApi.Media.get_category!(category.id)
+    assert length(items) == 2
+  end
 end
