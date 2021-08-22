@@ -19,4 +19,9 @@ defmodule MediaApi.Resolvers do
     Media.get_item!(id)
     |> Media.update_item(attrs)
   end
+
+  def delete_item(_parent, %{id: id}, _context) do
+    Media.get_item!(id)
+    |> Media.delete_item()
+  end
 end

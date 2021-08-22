@@ -37,5 +37,11 @@ defmodule MediaApi.Schema do
 
       resolve(&Resolvers.update_item/3)
     end
+
+    field :delete_item, type: :item do
+      arg :id, non_null(:integer)
+
+      resolve(&Resolvers.delete_item/3)
+    end
   end
 end
