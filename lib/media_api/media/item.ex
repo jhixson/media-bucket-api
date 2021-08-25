@@ -5,8 +5,8 @@ defmodule MediaApi.Media.Item do
   alias MediaApi.Media.Category
 
   schema "items" do
-    field :notes, :string
-    field :rating, :integer
+    field :notes, :string, default: ""
+    field :rating, :integer, default: 0
     field :status, Ecto.Enum, values: [:pending, :started, :finished]
     field :title, :string
 
