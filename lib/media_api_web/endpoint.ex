@@ -49,6 +49,6 @@ defmodule MediaApiWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
-  plug CORSPlug
+  plug CORSPlug, origin: ["https://genuine-froyo-3a8a84.netlify.app"]
   plug MediaApiWeb.Router
 end

@@ -11,6 +11,11 @@ defmodule MediaApi.Resolvers do
     {:ok, category}
   end
 
+  def get_item(_parent, %{id: id}, _context) do
+    item = Media.get_item!(id)
+    {:ok, item}
+  end
+
   def add_item(_parent, %{item: attrs}, _context) do
     Media.create_item(attrs)
   end
